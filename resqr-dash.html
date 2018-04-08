@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>RezQr Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+    <!--Bootstrap-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  
+    <!--Font Awesome-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    
+    <!--Bootstrap Tables-->
+    <link rel="stylesheet" href="https://rawgit.com/wenzhixin/bootstrap-table/develop/src/bootstrap-table.css">
+
+
+    <!-- My own CSS stylesheet -->
+    <link rel="stylesheet" type="text/css" media="screen" href="assets/css/stylesheet.css">
+</head>
+
+<body>
+    <header>
+        <div class="container-fluid bg-dark text-light">
+            <div class="row  px-4 py-3">
+                <div id="wthrData" class="col-12 col-md-6 text-center text-md-left">
+                    <div id="location">Your Location: Los Angeles</div>
+                    <div id="longLat">Long: 34.0522° N, Lat: 118.2437°</div>
+                    <div id="conDish"> Conditions : Cloudy Temp: 85° F</div>
+                </div>
+                <div class="col-12 col-md-6 d-flex d-flex justify-content-center justify-content-md-end">
+                    <h1 class="d-flex align-self-center mt-3 mt-md-0">ReZQ</h1>
+                </div>
+            </div>
+        </div>
+    </header>
+    <section id="activeCase" class="jumbotron bg-info text-white">
+        <div class="container-fluid text-center">
+            <div class="row">
+                <div class="col-12">
+                    <h4 class="mb-3">{age} Year old {gender}, complaining of {comments}. </h4>
+                    <div class="row  mt-2 mt-md-5">
+                        <div class="col-12 col-md-6">
+                            <p class="lead">
+                                <strong class="title">Patient Name:</strong>
+                                <span id="person">&nbsp;Harry P.</span>
+                                <br>
+                                <strong class="title">Patient:</strong>
+                                <span id="patient">&nbsp;Is Patient</span>
+                                <br>
+                                <strong class="title">Number:</strong>
+                                <span id="number">&nbsp;213-757-2732</span>
+                                <br>
+                            </p>
+                        </div>
+                        <div class="col-12  col-md-6">
+                            <p class="lead">
+                                <strong class="title">LOC:</strong>
+                                <span id="medical">&nbsp;Person is alert</span>
+                                <br>
+                                <strong class="title">Allergic To:</strong>
+                                <span id="medical">&nbsp;Latex</span>
+                                <br>
+                                <strong class="title">Medical History:</strong>
+                                <span id="medical">&nbsp;Diabetes</span>
+                            </p>
+                        </div>
+                        <button type="submit" class="btn btn-outline-light btn-lg w-100 mt-3">Get Directions</button>
+                        <button type="submit" class="btn btn-light btn-lg w-100 mt-3">Mark Completed</button>
+
+                    </div>
+                </div>
+            </div>
+    </section>
+    <section id="reportArea">
+        <div class="container-fluid">
+            <div class="row-fluid">
+                <div class="col-12 py-1 px-1">
+                    <div id="heading" class="d-flex flex-column flex-md-row justify-content-center mb-3 mt-1 px-2">
+                        <h2>ReZQr Dashboard</h2>
+                        <span class="lead ml-2 text-center">
+                            <em class="px-0 px-md-2 py-1 d-flex  align-self-center justify-content-center">"Providing help faster"</em>
+                        </span>
+                    </div>
+
+                    <div class="card mb-3">
+                        <h5 class="card-header bg-primary text-white text-center">
+                            <i class="fa fa-newspaper"></i>Previous Cases</h5>
+                        <div class="card-body tableResults">
+                            <div id="toolbar">
+                                <button id="remove" class="btn btn-danger" disabled>
+                                    <i class="fa fa-remove"></i> Delete
+                                </button>
+                            </div>
+                            <table id="table" data-toolbar="#toolbar" data-search="true" data-show-refresh="true" data-show-toggle="true" data-show-columns="true"
+                                data-show-export="true" data-detail-view="true" data-detail-formatter="detailFormatter" data-minimum-count-columns="2"
+                                data-show-pagination-switch="true" data-pagination="true" data-id-field="id" data-page-list="[10, 25, 50, 100, ALL]"
+                                data-side-pagination="server" data-url="http://issues.wenzhixin.net.cn/examples/bootstrap_table/data"
+                                data-response-handler="responseHandler">
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </section>
+    <footer>
+        <div class="container-fluid bg-dark text-light d-flex justify-content-center">
+            <div class="row px-4 py-3">
+                <p class="mb-0">ReZQe Dashboard</p>
+            </div>
+        </div>
+    </footer>
+
+
+    <!-- jQuery CDN -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+      <!--popper-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <!-- Bootstrap CDN -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+        <!-- Tables -->
+    <script src="https://rawgit.com/wenzhixin/bootstrap-table/develop/src/bootstrap-table.js"></script>
+     <!--Tables Export -->
+    <script src="https://rawgit.com/wenzhixin/bootstrap-table/develop/src/extensions/export/bootstrap-table-export.js"></script>
+     <!--Tables Export -->
+     <script src="http://rawgit.com/hhurz/tableExport.jquery.plugin/master/tableExport.js"></script>
+    <!-- <script src="assets/javascript/app.js"></script> -->
+    <script src="assets/javascript/table.js"></script>
+</body>
+
+</html>
