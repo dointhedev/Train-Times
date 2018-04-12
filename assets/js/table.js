@@ -1,166 +1,128 @@
-console.log("hi");
-const $table = $('#table');
-const $remove = $('#remove');
-let selections = [];
-
-function initTable() {
-  $table.bootstrapTable({
-    height: getHeight(),
-    columns: [
-      [
-        {
-          field: 'state',
-          checkbox: true,
-          rowspan: 2,
-          align: 'center',
-          valign: 'middle'
-        }, {
-          title: 'Item ID',
-          field: 'id',
-          rowspan: 2,
-          align: 'center',
-          valign: 'middle',
-          sortable: true
-        }, {
-          title: 'Item Detail',
-          colspan: 3,
-          align: 'center'
-        }
-      ],
-      [
-        {
-          field: 'name',
-          title: 'Item Name',
-          sortable: true,
-          editable: true,
-          align: 'center'
-        }, {
-          field: 'price',
-          title: 'Item Price',
-          sortable: true,
-          align: 'center',
-          editable: {
-            type: 'text',
-            title: 'Item Price',
-            validate(value) {
-              value = $.trim(value);
-              if (!value) {
-                return 'This field is required';
-              }
-              if (!/^\$/.test(value)) {
-                return 'This field needs to start width $.'
-              }
-              const data = $table.bootstrapTable('getData');
-              const index = $(this).parents('tr').data('index');
-              console.log(data[index]);
-              return '';
-            }
-          },
-          footerFormatter: totalPriceFormatter
-        }, {
-          field: 'operate',
-          title: 'Item Operate',
-          align: 'center',
-          events: operateEvents,
-          formatter: operateFormatter
-        }
-      ]
-    ]
-  });
-  // sometimes footer render error.
-  setTimeout(() => {
-    $table.bootstrapTable('resetView');
-  }, 200);
-  $table.on('check.bs.table uncheck.bs.table ' +
-            'check-all.bs.table uncheck-all.bs.table', () => {
-    $remove.prop('disabled', !$table.bootstrapTable('getSelections').length);
-
-    // save your data, here just save the current page
-    selections = getIdSelections();
-    // push or splice the selections if you want to save all data selections
-  });
-  $table.on('expand-row.bs.table', (e, index, row, $detail) => {
-    if (index % 2 == 1) {
-      $detail.html('Loading from ajax request...');
-      $.get('LICENSE', res => {
-        $detail.html(res.replace(/\n/g, '<br>'));
-      });
-    }
-  });
-  $table.on('all.bs.table', (e, name, args) => {
-    console.log(name, args);
-  });
-  $remove.click(() => {
-    const ids = getIdSelections();
-    $table.bootstrapTable('remove', {
-      field: 'id',
-      values: ids
-    });
-    $remove.prop('disabled', true);
-  });
-  $(window).resize(() => {
-    $table.bootstrapTable('resetView', {
-      height: getHeight()
-    });
-  });
-}
-
-
-
-function getIdSelections() {
-  return $.map($table.bootstrapTable('getSelections'), ({id}) => id);
-}
-
-function responseHandler(res) {
-  $.each(res.rows, (i, row) => {
-    row.state = $.inArray(row.id, selections) !== -1;
-  });
-  return res;
-}
-
-function detailFormatter(index, row) {
-  const html = [];
-  $.each(row, (key, value) => {
-    html.push(`<p><b>${key}:</b> ${value}</p>`);
-  });
-  return html.join('');
-}
-
-function operateFormatter(value, row, index) {
-  return [
-    '<a class="like" href="javascript:void(0)" title="Like">',
-    '<i class="fa fa-heart"></i>',
-    '</a>  ',
-    '<a class="remove" href="javascript:void(0)" title="Remove">',
-    '<i class="fa fa-remove"></i>',
-    '</a>'
-  ].join('');
-}
-
-window.operateEvents = {
-  'click .like': function (e, value, row, index) {
-    alert(`You click like action, row: ${JSON.stringify(row)}`);
-  },
-  'click .remove': function(e, value, {id}, index) {
-    $table.bootstrapTable('remove', {
-      field: 'id',
-      values: [id]
-    });
-  }
+/*:::::::: FireBase Connect :::::::::*/
+var config = {
+  apiKey: "AIzaSyA29ZBJTWfCBQJHnBr4bGp-2Ut4cmGcw9U",
+  authDomain: "train-times-16959.firebaseapp.com",
+  databaseURL: "https://train-times-16959.firebaseio.com",
+  projectId: "train-times-16959",
+  storageBucket: "train-times-16959.appspot.com",
+  messagingSenderId: "369862402908"
 };
+firebase.initializeApp(config);
 
-function totalPriceFormatter(data) {
-  let total = 0;
-  $.each(data, (i, {price}) => {
-    total += +(price.substring(1));
+/*:::::::: GLOBAL VARIABLES :::::::::*/
+var database = "";
+var tblHed = ["Train ID", "Time Added", "Train Name", "Destination", "Frequency (min)", "Next Arrival", "Minutes Away", "Remove"];
+var thead = $("#thead");
+var tableResults = $("#tableResults");
+var tName = "";
+var dest = "";
+var fTrain = "";
+var freq = "";
+var icon = '<i class="fa fa-trash-o text-white"></i>';
+var d = new Date();
+
+$(document).ready(function () {
+  jsSetup();
+});
+
+function fireGet() {
+  database = firebase.database();
+  var ref = database.ref();
+  ref.on("value", function(snapshot) {
+    var trnDta = snapshot.val();
+    var keys = Object.keys(trnDta);
+    for (var x = 0; x < keys.length; x++) {
+      var k = keys[x];
+      var date = trnDta[k].date;
+      var fireData = "";
+      fireData += "<tr class='dataRW' id='tr" + x + "'>";
+      fireData += "<td>" + x + "</td>";
+      fireData += "<td>" + trnDta[k].date + "</td>";
+      fireData += "<td>" + trnDta[k].tName + "</td>";
+      fireData += "<td>" + trnDta[k].dest + "</td>";
+      fireData += "<td>" + trnDta[k].freq + "</td>";
+      fireData += "<td>" + trnDta[k].fTrain + "</td>";
+      fireData += "<td>" +  trnDta[k].fTrain + "</td>";
+      fireData += "<td><button class='btn dr bg-danger' data-key='" + k  + "'>" + icon + "</button></td>";
+      fireData += "</tr>";
+      
+      $("#thead").append(fireData);
+    }
+}); 
+}
+
+$("body").on("click",'.dr', function (e) {
+  e.preventDefault();
+  var key = $(this).data('key');
+  console.log(key);
+   if(confirm('Are you sure?')){
+      firebase.database().ref().child(key).remove();
+      tableResults.html(' ');
+      results();
+      fireGet();
+   }
+});
+
+function processForm() {
+  $('#trains').submit(function (e) {
+    e.preventDefault();
+    tableResults.html(' ');
+    results();
+    console.log("processing");
+
+    date = d.toLocaleString([], {
+      hour12: true
+    });
+    tName = $("#inputName").val().trim();
+    dest = $("#inputDest").val().trim();
+    fTrain = $("#inputTime").val().trim();
+    // I was trying to figure this out. I am going to push this to repo and continue to work on it. 
+  // var  randomDate = fTrain;
+  // var randomFormat = "MM/DD/YYYY";
+  // var convertedDate = moment(randomDate, randomFormat);
+  //   console.log(convertedDate);
+  //   console.log(moment(convertedDate).toNow());
+  //   freq = $("#inputFreq").val().trim();
+  //   console.log(moment(convertedDate).format("MM/DD/YY"));
+  //   console.log(moment(convertedDate).format("MMM Do, YYYY hh:mm:ss"));
+  //   console.log(moment(convertedDate).format("X"));
+  //   console.log("----------------------------------------");
+
+  //   // 2 ...to determine the time in years, months, days between today and the randomDate
+  //   console.log(moment(convertedDate).toNow());
+  //   console.log(moment(convertedDate).diff(moment(), "years"));
+  //   console.log(moment(convertedDate).diff(moment(), "months"));
+  //   console.log(moment(convertedDate).diff(moment(), "days"));
+  //   console.log("----------------------------------------");
+  //   console.log(moment().startOf('12').fromNow());    
+    database.ref().push({
+      date: date,
+      tName: tName,
+      dest: dest,
+      fTrain: fTrain,
+      freq: freq
+    });
   });
-  return `$${total}`;
+
 }
 
-function getHeight() {
-  return $(window).height() - $('h1').outerHeight(true);
+
+function results() {
+  var table = $("<table class='table'>");
+  var tblHD = $("<thead id='thead'>");
+  var tr = $("<tr>");
+  for (var i = 0; i < tblHed.length; i++) {
+    var th = $("<th scope='col'>");
+    th.text(tblHed[i]);
+    tr.append(th);
+  }
+  tblHD.append(tr);
+  table.append(tblHD);
+  tableResults.html(table);
 }
 
-$(() => {
-	initTable();
-})
+function jsSetup() {
+  results();
+  fireGet();
+  processForm();
+}

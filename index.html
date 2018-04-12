@@ -1,33 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
-
+    
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Train Times</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!--Bootstrap-->
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
-  
-  <!--Font Awesome-->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-  
-  <!--Bootstrap Tables-->
-  <link rel="stylesheet" href="https://rawgit.com/wenzhixin/bootstrap-table/develop/src/bootstrap-table.css">
-   <!-- Custom stylesheet -->
- <link rel="stylesheet" type="text/css" media="screen" href="assets/css/styles.css">
+    <!--Bootstrap-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+
+    <!--Font Awesome-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <!--Bootstrap Tables-->
+    <link rel="stylesheet" href="https://rawgit.com/wenzhixin/bootstrap-table/develop/src/bootstrap-table.css">
+    <!-- Custom stylesheet -->
+    <link rel="stylesheet" type="text/css" media="screen" href="assets/css/styles.css">
+    <!-- Link to Moment.js should go here -->
+    <script src="https://cdn.jsdelivr.net/momentjs/2.12.0/moment.min.js"></script>
 </head>
 
 <body>
     <header>
         <div class="container-fluid bg-dark text-light">
             <div class="row  px-4 py-3">
-                <div id="wthrData" class="col-12 col-md-6 text-center text-md-left">
-                    <div id="location">Your Location: Los Angeles</div>
-                    <div id="longLat">Long: 34.0522° N, Lat: 118.2437°</div>
-                    <div id="conDish"> Conditions : Cloudy Temp: 85° F</div>
-                </div>
-                <div class="col-12 col-md-6 d-flex d-flex justify-content-center justify-content-md-end">
+                <div class="col-12 d-flex d-flex justify-content-center">
                     <h1 class="d-flex align-self-center mt-3 mt-md-0">Train Times</h1>
                 </div>
             </div>
@@ -37,50 +34,40 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-12 py-4 px-3">
-                        <div class="card mb-3">
-                                <h5 class="card-header bg-info text-white text-center">
-                                    <i class="fa fa-newspaper"></i>Current Train Schedule</h5>
-                                <div class="card-body tableResults">
-                                    <div id="toolbar">
-                                        <button id="remove" class="btn btn-danger" disabled>
-                                            <i class="fa fa-remove"></i> Delete
-                                        </button>
-                                    </div>
-                                    <table id="table" data-toolbar="#toolbar" data-search="true" data-show-refresh="true" data-show-toggle="true" data-show-columns="true"
-                                        data-show-export="true" data-detail-view="true" data-detail-formatter="detailFormatter" data-minimum-count-columns="2"
-                                        data-show-pagination-switch="true" data-pagination="true" data-id-field="id" data-page-list="[10, 25, 50, 100, ALL]"
-                                        data-side-pagination="server" data-url="http://issues.wenzhixin.net.cn/examples/bootstrap_table/data"
-                                        data-response-handler="responseHandler">
-                                    </table>
-                                </div>
-                            </div>
                     <div class="card mb-3">
                         <h5 class="card-header bg-info text-white text-center">
-                            <i class="fa fa-newspaper"></i>Add a Train</h5>
-                        <div class="card-body addTrain">
-                            <form>
-                                <div class="form-group mt-2">Train Name</label>
-                                    <input type="text" class="form-control" id="inputName" placeholder="ex: 3:10 To Yuma">
-                                </div>
-                                <div class="form-group mt-2">Destination</label>
-                                    <input type="text" class="form-control" id="inputDest" placeholder="ex: Yuma">
-                                </div>
-                                <div class="form-group mt-2">First Train Time</label>
-                                    <input type="text" class="form-control" id="inputTime" placeholder="ex: HH:mm - military time">
-                                </div>
-                                <div class="form-group mt-2">Frequency</label>
-                                    <input type="text" class="form-control" id="inputFreq" placeholder="ex: min">
-                                </div>
-                                <button type="submit" class="btn btn-outline-info btn-lg w-100 mt-3">Add Train</button>
-                            </form>
+                            <i class="fa fa-newspaper"></i>Current Train Schedule</h5>
+                        <div id="tableResults" class="card-body">
                         </div>
                     </div>
                 </div>
             </div>
+            <div class="card mb-3">
+                <h5 class="card-header bg-info text-white text-center">
+                    <i class="fa fa-newspaper"></i>Add a Train</h5>
+                <div class="card-body addTrain">
+                    <form id="trains">
+                        <div class="form-group mt-2">Train Name</label>
+                            <input type="text" class="form-control" id="inputName" placeholder="ex: 3:10 To Yuma">
+                        </div>
+                        <div class="form-group mt-2">Destination</label>
+                            <input type="text" class="form-control" id="inputDest" placeholder="ex: Yuma">
+                        </div>
+                        <div class="form-group mt-2">First Train Time</label>
+                            <input type="text" class="form-control" id="inputTime" placeholder="ex: hh:mm:ss - military time">
+                        </div>
+                        <div class="form-group mt-2">Frequency</label>
+                            <input type="text" class="form-control" id="inputFreq" placeholder="ex: min">
+                        </div>
+                        <button type="submit" class="btn btn-outline-info btn-lg w-100 mt-3">Add Train</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        </div>
         </div>
         </div>
     </section>
-
     <footer>
         <div class="container-fluid bg-dark text-light d-flex justify-content-center">
             <div class="row px-4 py-3">
@@ -88,20 +75,11 @@
             </div>
         </div>
     </footer>
-
     <!-- jQuery CDN -->
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-    <!--popper-->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-    <!-- Bootstrap CDN -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-    <!-- Tables -->
-    <script src="https://rawgit.com/wenzhixin/bootstrap-table/develop/src/bootstrap-table.js"></script>
-    <!--Tables Export -->
-    <script src="https://rawgit.com/wenzhixin/bootstrap-table/develop/src/extensions/export/bootstrap-table-export.js"></script>
-    <!--Tables Export -->
-    <script src="http://rawgit.com/hhurz/tableExport.jquery.plugin/master/tableExport.js"></script>
-    <!-- <script src="assets/javascript/app.js"></script> -->
+    <!-- FireBase -->
+    <script src="https://www.gstatic.com/firebasejs/4.12.1/firebase.js"></script>
+    <!-- CustomJS -->
     <script src="assets/js/table.js"></script>
 </body>
 
