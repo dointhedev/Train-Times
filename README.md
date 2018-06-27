@@ -1,7 +1,7 @@
 
 # FireBase Train Times
 > ### I demonstrate the use of jQuery, Javascript, Firebase and Materialize. 
-- - -
+
 # Project Overview
 In this example, I will show how to use HTML5,Bootrap 4, JQuery/Javascript and FireBase to create a really cool app. This app has a form that will except data and store it in a fireBase DB then return train times to table.
 
