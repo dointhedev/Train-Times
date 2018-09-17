@@ -1,5 +1,5 @@
-/*:::::::: FireBase Connect :::::::::*/
-var config = {
+/*::::::::FireBase Connect:::::::::*/
+const config = {
   apiKey: "AIzaSyA29ZBJTWfCBQJHnBr4bGp-2Ut4cmGcw9U",
   authDomain: "train-times-16959.firebaseapp.com",
   databaseURL: "https://train-times-16959.firebaseio.com",
@@ -9,32 +9,42 @@ var config = {
 };
 firebase.initializeApp(config);
 
-/*:::::::: GLOBAL VARIABLES :::::::::*/
-var database = "";
-var tblHed = ["Train ID", "Time Added", "Train Name", "Destination", "Frequency (min)", "Next Arrival", "Minutes Away", "Remove"];
-var thead = $("#thead");
-var tableResults = $("#tableResults");
-var tName = "";
-var dest = "";
-var fTrain = "";
-var freq = "";
-var icon = '<i class="fa fa-trash-o text-white"></i>';
-var d = new Date();
+/*::::::::GLOBAL VARIABLES:::::::::*/
+let database = "";
+let tName = "";
+let dest = "";
+let fTrain = "";
+let freq = "";
+const icon = '<i class="fa fa-trash-o text-white"></i>';
+const d = new Date();
 
-$(document).ready(function () {
-  jsSetup();
-});
+/*::::::::DATA:::::::::*/
+const tblHed = ["Train ID", "Time Added", "Train Name", "Destination", "Frequency (min)", "Next Arrival", "Minutes Away", "Actions"];
+
+/*::::::::DOM CACHE:::::::::*/
+const thead = $("#thead");
+const tableResults = $("#tableResults");
+
+/*::::::::MAIN APP JS:::::::::*/
+$(document).ready(jsSetup);
+
+$("body").on("click",'.dr', delTrain);
+$("body").on("click",'.edit', editTrain);
+$("body").on("submit",'#trains', processForm);
+
+
 
 function fireGet() {
   database = firebase.database();
-  var ref = database.ref();
+  const ref = database.ref();
+  const trash = genIcon("trash-o");
+  console.log(trash[0])
   ref.on("value", function(snapshot) {
-    var trnDta = snapshot.val();
-    var keys = Object.keys(trnDta);
-    for (var x = 0; x < keys.length; x++) {
-      var k = keys[x];
-      var date = trnDta[k].date;
-      var fireData = "";
+    const trnDta = snapshot.val();
+    const keys = Object.keys(trnDta);
+    for (let x = 0; x < keys.length; x++) {
+      const k = keys[x];
+      let fireData = "";
       fireData += "<tr class='dataRW' id='tr" + x + "'>";
       fireData += "<td>" + x + "</td>";
       fireData += "<td>" + trnDta[k].date + "</td>";
@@ -43,7 +53,7 @@ function fireGet() {
       fireData += "<td>" + trnDta[k].freq + "</td>";
       fireData += "<td>" + trnDta[k].fTrain + "</td>";
       fireData += "<td>" +  trnDta[k].fTrain + "</td>";
-      fireData += "<td><button class='btn dr bg-danger' data-key='" + k  + "'>" + icon + "</button></td>";
+      fireData += "<td><button class='btn dr bg-danger' data-key='" + k  + "'>" + trash  + "</button><button id='" + x + "' class='btn edit btn-primary' data-key='" + k  + "'>" + icon + "</button></td>";
       fireData += "</tr>";
       
       $("#thead").append(fireData);
@@ -51,25 +61,47 @@ function fireGet() {
 }); 
 }
 
-$("body").on("click",'.dr', function (e) {
+function delTrain(e){
   e.preventDefault();
-  var key = $(this).data('key');
-  console.log(key);
+   const key = $(this).data('key');
    if(confirm('Are you sure?')){
       firebase.database().ref().child(key).remove();
       tableResults.html(' ');
-      results();
+      genTable();
       fireGet();
    }
-});
+}
 
-function processForm() {
-  $('#trains').submit(function (e) {
-    e.preventDefault();
+function editTrain(e){
+  e.preventDefault();
+ $(this).removeClass("btn-primary").addClass("btn-success")
+  const tr = $(`#tr${e.target.id}`)
+  console.log(tr);
+  tr.find('td').each(function(i, el) {
+    if((i === 1 ) || (i === 2 ) || (i === 3 ) || (i === 4 )) {
+    $(this).html(`<textarea>${$(this).html()}</textarea>`);
+    }
+  });  
+//   $('#save').show();
+//   $('.info').fadeIn('fast');
+
+// $('#save').click(function(){
+//   $('#save, .info').hide();
+//   $('textarea').each(function(){
+//     var content = $(this).val();//.replace(/\n/g,"<br>");
+//     $(this).html(content);
+//     $(this).contents().unwrap();    
+//   }); 
+
+//   $('#edit').show(); 
+//   alert(e.target);
+// });
+}
+
+function processForm(e) {
+  e.preventDefault();
     tableResults.html(' ');
-    results();
-    console.log("processing");
-
+    genTable();
     date = d.toLocaleString([], {
       hour12: true
     });
@@ -102,27 +134,35 @@ function processForm() {
       fTrain: fTrain,
       freq: freq
     });
-  });
-
 }
 
 
-function results() {
-  var table = $("<table class='table'>");
-  var tblHD = $("<thead id='thead'>");
-  var tr = $("<tr>");
-  for (var i = 0; i < tblHed.length; i++) {
-    var th = $("<th scope='col'>");
-    th.text(tblHed[i]);
+function genTable() {
+  const table = genEle("<table>", null, "table", null); 
+  const tblHD = genEle("<table>", "thead", "table", null); 
+  const tr = $("<tr>");
+   for (let i of tblHed ){
+    const th = genEle("<th>", null, null, i); 
     tr.append(th);
-  }
+   }
   tblHD.append(tr);
-  table.append(tblHD);
-  tableResults.html(table);
+  tableResults.html(table.append(tblHD));
 }
 
 function jsSetup() {
-  results();
+  genTable();
   fireGet();
-  processForm();
+}
+
+/*::::::::HELPER FUNCTIONS:::::::::*/
+function genEle(type, id, className, text) {
+  const el = $(type).addClass(className).text(text);
+  if (id !== null){
+    el.attr("id", id);
+  }
+return el;
+}
+
+function genIcon(type){
+  return $("<i>").addClass(`fa fa-${type} text-white`);
 }
