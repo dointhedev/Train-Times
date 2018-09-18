@@ -1,4 +1,4 @@
-/*::::::::FireBase Connect:::::::::*/
+/*::::::::FIREBASE CONNECT:::::::::*/
 const config = {
   apiKey: "AIzaSyA29ZBJTWfCBQJHnBr4bGp-2Ut4cmGcw9U",
   authDomain: "train-times-16959.firebaseapp.com",
@@ -7,6 +7,8 @@ const config = {
   storageBucket: "train-times-16959.appspot.com",
   messagingSenderId: "369862402908"
 };
+
+// Initialize Firebase connection.
 firebase.initializeApp(config);
 
 /*::::::::GLOBAL VARIABLES:::::::::*/
@@ -26,22 +28,21 @@ const thead = $("#thead");
 const tableResults = $("#tableResults");
 
 /*::::::::MAIN APP JS:::::::::*/
-$(document).ready(jsSetup);
+$(document).ready(fireGet);
 
+/*::::::::EVENT LISTENERS:::::::::*/
 $("body").on("click", '.dr', delTrain);
 $("body").on("click", '.edit', editTrain);
 $("body").on("submit", '#trains', processForm);
 
-
-
+// This function is the initial request and laoding of data.
 function fireGet() {
   $('#thead').empty();
-  genTable()
+  genTable();
   database = firebase.database();
   const ref = database.ref();
   ref.on("value", function (snapshot) {
     const trnDta = snapshot.val();
-    console.log(trnDta)
     const keys = Object.keys(trnDta);
     for (let x = 0; x < keys.length; x++) {
       const k = keys[x];
@@ -63,84 +64,95 @@ function fireGet() {
   });
 }
 
-
+// Function to delete train. 
 function delTrain(e) {
   e.preventDefault();
   const key = $(this).data('key');
   if (confirm('Are you sure?')) {
     firebase.database().ref().child(key).remove();
     tableResults.html(' ');
-    genTable();
     fireGet();
   }
 }
 
+// Function to edit train. 
 function editTrain(e) {
   e.preventDefault();
   const id = e.target.id;
   $(this).siblings(`#${id}`).html(genIcon("times")).removeClass("dr").addClass("reload").click(fireGet);
-  $(this).removeClass("bg-primary ml-2").addClass("bg-success mt-2").html(genIcon("check"));
-  $(".edit").removeClass("ml-2").addClass("mt-2")
-  const tr = $(`#tr${id}`)
-  console.log(tr);
+  $(this).removeClass("edit bg-primary ml-2").addClass("bg-success mt-2").html(genIcon("check")).click(update);
+  $(".edit").removeClass("ml-2").addClass("mt-2");
+  const tr = $(`#tr${id}`);
   tr.find('td').each(function (i) {
-    if ((i === 2) || (i === 3) || (i === 4)) {
+    if ((i === 2) || (i === 3)) {
       $(this).html(genEle("<input>", null, "inActive", null).val($(this).html()));
     }
   });
-  //   $('#save').show();
-  //   $('.info').fadeIn('fast');
-
-  // $('#save').click(function(){
-  //   $('#save, .info').hide();
-  //   $('textarea').each(function(){
-  //     var content = $(this).val();//.replace(/\n/g,"<br>");
-  //     $(this).html(content);
-  //     $(this).contents().unwrap();    
-  //   }); 
-
-  //   $('#edit').show(); 
-  //   alert(e.target);
-  // });
 }
 
+// Function to convert server time in a format humans can read. 
 function convertTime(time) {
   const d = new Date(time);
   return d.toLocaleString();
 }
 
+// Process train form. 
 function processForm(e) {
   e.preventDefault();
-  tableResults.html(' ');
   tName = $("#inputName").val().trim();
   dest = $("#inputDest").val().trim();
   fTrain = $("#inputTime").val().trim();
   freq = $("#inputFreq").val().trim();
-  const ans = findNextTrain(fTrain, freq)
-  createFire(tName, dest, fTrain, freq, ans[0], ans[1]);
-  genTable();
-  clearForm();
+
+  if (fTrain.match(/^(2[0-3]|[01]?[0-9]):([0-5]?[0-9]):([0-5]?[0-9])$/)) {
+    const ans = findNextTrain(fTrain, freq);
+    createFire(tName, dest, freq, ans[0], ans[1]);
+  } else {
+    alert("First Train Time needs to be in proper Military Time Format.");
+  }
 }
 
+// This is the logic when updating a train. 
+function update(e) {
+  const key = e.target.dataset.key;
+  const id = e.target.id;
+  let nArr = [];
+  $(`#tr${id}`).find('input').each(function (i) {
+    var text = $(this).val();
+    nArr.push(text);
+  });
+  updateFire(key, nArr[0], nArr[1]);
+}
 
-
-function createFire(tName, dest, fTrain, freq, nextA, tArrival) {
+// Create operation for Firebase. 
+function createFire(tName, dest, freq, nextA, tArrival) {
   database.ref().push({
     date: firebase.database.ServerValue.TIMESTAMP,
     tName: tName,
     dest: dest,
-    fTrain: fTrain,
     freq: freq,
     nextA: nextA,
     tArrival: tArrival,
-
   });
+  clear();
 }
 
-function clearForm() {
-  $("#trains").trigger('reset');
+// Update operation for Firebase. 
+function updateFire(key, tName, dest) {
+  database.ref().child(key).update({
+    date: firebase.database.ServerValue.TIMESTAMP,
+    tName: tName,
+    dest: dest
+  });
+  clear();
 }
 
+// Reset App.
+function clear() {
+  document.location.reload();
+}
+
+// This function holds the logic behind the calculation of time. 
 function findNextTrain(fTrain, freq) {
   const timeArr = fTrain.split(":");
   const trainTime = moment().hours(timeArr[0]).minutes(timeArr[1]);
@@ -148,7 +160,7 @@ function findNextTrain(fTrain, freq) {
   let tMinutes;
   let tArrival;
 
-  // If the first train is later than the current time, sent arrival to the first train time
+  // If the first train is later than the current time, sent arrival to the first train time.
   if (maxMoment === trainTime) {
     tArrival = trainTime.format("hh:mm A");
     tMinutes = trainTime.diff(moment(), "minutes");
@@ -161,11 +173,11 @@ function findNextTrain(fTrain, freq) {
     tMinutes = freq - tRemainder;
     // To calculate the arrival time, add the tMinutes to the current time
     tArrival = moment().add(tMinutes, "m").format("hh:mm A");
-
   }
   return [tArrival, tMinutes]
 }
 
+// Function to generate the table. 
 function genTable() {
   const table = genEle("<table>", null, "table", null);
   const tblHD = genEle("<table>", "thead", "table", null);
@@ -178,11 +190,8 @@ function genTable() {
   tableResults.html(table.append(tblHD));
 }
 
-function jsSetup() {
-  fireGet();
-}
-
 /*::::::::HELPER FUNCTIONS:::::::::*/
+// Generate all HTML elements with this function.
 function genEle(type, id, className, text) {
   const el = $(type).addClass(className).text(text);
   if (id !== null) {
@@ -191,6 +200,7 @@ function genEle(type, id, className, text) {
   return el;
 }
 
+// Generate all Icons with this function.
 function genIcon(type) {
   return $("<i>").addClass(`fa fa-${type} text-white`);
 }
