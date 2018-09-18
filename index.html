@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
-    
+
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Train Times</title>
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    
+
     <!--Bootstrap-->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
     <!--Font Awesome-->
@@ -45,26 +45,37 @@
                 <h5 class="card-header bg-info text-white text-center">
                     <i class="fa fa-newspaper"></i>Add a Train</h5>
                 <div class="card-body addTrain">
-                    <form id="trains">
+                    <form id="trains" class="needs-validation" novalidate>
                         <div class="form-group mt-2">Train Name</label>
-                            <input type="text" class="form-control" id="inputName" placeholder="ex: 3:10 To Yuma">
+                            <input type="text" class="form-control" id="inputName" placeholder="ex: 3:10 To Yuma"
+                                required>
+                            <div class="invalid-feedback">
+                                Please choose a Train Name ex: 3:10 To Yuma.
+                            </div>
                         </div>
                         <div class="form-group mt-2">Destination</label>
-                            <input type="text" class="form-control" id="inputDest" placeholder="ex: Yuma">
+                            <input type="text" class="form-control" id="inputDest" placeholder="ex: Yuma" required>
+                            <div class="invalid-feedback">
+                                Please choose a Destination ex: Yuma.
+                            </div>
                         </div>
                         <div class="form-group mt-2">First Train Time</label>
-                            <input type="text" class="form-control" id="inputTime" placeholder="ex: hh:mm:ss - military time">
+                            <input type="text" class="form-control" id="inputTime" placeholder="ex: hh:mm:ss - military time"
+                                required>
+                            <div class="invalid-feedback">
+                                Please choose a First Train Time. ex 12:12:00
+                            </div>
                         </div>
                         <div class="form-group mt-2">Frequency</label>
-                            <input type="text" class="form-control" id="inputFreq" placeholder="ex: min">
+                            <input type="text" class="form-control" id="inputFreq" placeholder="ex: 35 min" required>
+                            <div class="invalid-feedback">
+                                Please choose a train frequency. ex 25
+                            </div>
                         </div>
                         <button type="submit" class="btn btn-outline-info btn-lg w-100 mt-3">Add Train</button>
                     </form>
                 </div>
             </div>
-        </div>
-        </div>
-        </div>
         </div>
     </section>
     <footer>
@@ -77,13 +88,19 @@
 
     <!-- jQuery CDN -->
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <!-- Popper JS  -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
     <!-- FireBase -->
     <script src="https://www.gstatic.com/firebasejs/4.12.1/firebase.js"></script>
     <!-- Link to Moment.js should go here -->
     <script src="https://cdn.jsdelivr.net/momentjs/2.12.0/moment.min.js"></script>
+    <!-- Validation -->
+    <script src="assets/js/validate.js"></script>
     <!-- CustomJS -->
     <script src="assets/js/table.js"></script>
-    
+
 </body>
 
 </html>
