@@ -27,3 +27,21 @@ a {
 .page-link {
     color: #17a2b8;
 }
+
+.fa-edit, .fa-check {
+    font-size: 21px;
+    padding: 4px 0;
+}
+.fa-times {
+    font-size: 20px;
+    padding: 4px 3px;
+}
+
+.inActive {
+    border: 1px solid red;
+    padding: 0 .3rem;
+}
+.inActive:focus {
+    border: 1px solid green;
+
+}
